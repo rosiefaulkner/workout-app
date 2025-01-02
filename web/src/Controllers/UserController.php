@@ -75,7 +75,7 @@ class UserController extends Controller
      *
      * @return string response
      */
-    public function addWorkoutToUser(array $workout): string
+    public function addWorkout(array $workout): string
     {
         $this->user->addWorkout($workout);
         return json_encode([

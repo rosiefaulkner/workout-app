@@ -67,6 +67,8 @@ export const LazyCheckbox = ({ movement, value }) => {
 function MovementsCheckboxes({ setWorkoutTitle = () => {},  setMovementsChecked = () => {} }) {
   const [groupSelected, setGroupSelected] = useState([]);
   const [titleValue, setTitleValue] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  let filteredItems = movementsData;
 
   useEffect(() => {
     if (groupSelected.length < 1) {
@@ -74,6 +76,19 @@ function MovementsCheckboxes({ setWorkoutTitle = () => {},  setMovementsChecked 
     }
     setMovementsChecked(groupSelected);
   }, [groupSelected]);
+
+  filteredItems = movementsData.movements.filter(item =>
+    searchTerm ? item.name.toLowerCase().includes(searchTerm.toLowerCase()) : movementsData.movements
+  );
+
+  const handleCheckboxChange = (id) => {
+    setGroupSelected(prev =>
+      prev.includes(id)
+        ? prev.filter(item => item !== id)
+        : [...prev, id]
+    );
+  };
+
 
   useEffect(() => {
     setWorkoutTitle(titleValue);
@@ -91,13 +106,26 @@ function MovementsCheckboxes({ setWorkoutTitle = () => {},  setMovementsChecked 
             inputWrapper:
               "h-full font-normal text-default-500 bg-default-400/20 dark:bg-default-500/20",
           }}
-          label="Workout Routine Title"
+          label="Workout Title"
           type="text"
           value={titleValue}
           onValueChange={setTitleValue}
         />
       </div>
       <div className="flex flex-col gap-1 w-full">
+      <Input
+          classNames={{
+            mainWrapper: "h-full pb-0",
+            input:
+              "pb-0 text-md border-transparent focus:border-transparent focus:ring-0",
+            inputWrapper:
+              "h-full font-normal text-default-500 bg-default-400/20 dark:bg-default-500/20",
+          }}
+          label="Search"
+          type="text"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
         <ScrollShadow
           orientation="vertical"
           className="w-full max-w-full h-[400px] overflow-y-auto shadow-md"
@@ -110,7 +138,7 @@ function MovementsCheckboxes({ setWorkoutTitle = () => {},  setMovementsChecked 
             value={groupSelected}
             onChange={setGroupSelected}
           >
-            {movementsData.movements.map((movement, index) => (
+            {filteredItems.map((movement, index) => (
               <LazyCheckbox
                 key={index}
                 movement={movement}
